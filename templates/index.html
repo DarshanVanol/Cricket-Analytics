@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+
+<head>
+     <meta charset="utf-8">
+     <title>First Innings Score Predictor</title>
+     <link rel="shortcut icon" href="{{ url_for('static', filename='ipl-favicon.ico') }}">
+     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+     <script src="https://kit.fontawesome.com/5f3f547070.js" crossorigin="anonymous"></script>
+     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+     <style>
+          * {
+               box-sizing: border-box;
+               -webkit-box-sizing: border-box;
+               -moz-box-sizing: border-box;
+          }
+
+          body {
+               font-family: Helvetica;
+               -webkit-font-smoothing: antialiased;
+               background: linear-gradient(45deg, #49a09d, #5f2c82);
+          }
+
+          h2 {
+               text-align: center;
+               font-size: 18px;
+               text-transform: uppercase;
+               letter-spacing: 1px;
+               color: white;
+               padding: 30px 0;
+          }
+
+          /* Table Styles */
+
+          .table-wrapper {
+               margin: 10px 70px 70px;
+               box-shadow: 0px 35px 50px rgba(0, 0, 0, 0.2);
+          }
+
+          .fl-table {
+               border-radius: 5px;
+               font-size: 12px;
+               font-weight: normal;
+               border: none;
+               border-collapse: collapse;
+               width: 100%;
+               max-width: 100%;
+               white-space: nowrap;
+               background-color: white;
+          }
+
+          .fl-table td,
+          .fl-table th {
+               text-align: center;
+               padding: 8px;
+          }
+
+          .fl-table td {
+               /* border-right: 1px solid #ada8a8cf; */
+               font-size: 12px;
+          }
+
+          .fl-table thead th {
+               color: #ffffff;
+               background: #4FC3A1;
+          }
+
+
+          .fl-table thead th:nth-child(odd) {
+               color: #ffffff;
+               background: #324960;
+          }
+
+          .fl-table tr:nth-child(even) {
+               background: #F8F8F8;
+          }
+
+          /* Responsive */
+
+          @media (max-width: 767px) {
+               .fl-table {
+                    display: block;
+                    width: 100%;
+               }
+
+               .table-wrapper:before {
+                    content: "Scroll horizontally >";
+                    display: block;
+                    text-align: right;
+                    font-size: 11px;
+                    color: white;
+                    padding: 0 0 10px;
+               }
+
+               .fl-table thead,
+               .fl-table tbody,
+               .fl-table thead th {
+                    display: block;
+               }
+
+               .fl-table thead th:last-child {
+                    border-bottom: none;
+               }
+
+               .fl-table thead {
+                    float: left;
+               }
+
+               .fl-table tbody {
+                    width: auto;
+                    position: relative;
+                    overflow-x: auto;
+               }
+
+               .fl-table td,
+               .fl-table th {
+                    padding: 20px .625em .625em .625em;
+                    height: 60px;
+                    vertical-align: middle;
+                    box-sizing: border-box;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    width: 120px;
+                    font-size: 13px;
+                    text-overflow: ellipsis;
+               }
+
+               .fl-table thead th {
+                    text-align: left;
+                    border-bottom: 1px solid #f7f7f9;
+               }
+
+               .fl-table tbody tr {
+                    display: table-cell;
+               }
+
+               .fl-table tbody tr:nth-child(odd) {
+                    background: none;
+               }
+
+               .fl-table tr:nth-child(even) {
+                    background: transparent;
+               }
+
+               .fl-table tr td:nth-child(odd) {
+                    background: #F8F8F8;
+                    border-right: 1px solid #E6E4E4;
+               }
+
+               .fl-table tr td:nth-child(even) {
+                    border-right: 1px solid #E6E4E4;
+               }
+
+               .fl-table tbody td {
+                    display: block;
+                    text-align: center;
+               }
+          }
+
+          .containerz {
+               height: 200px;
+               position: relative;
+          }
+
+          .vertical-center {
+               margin: 0;
+               position: absolute;
+               top: 50%;
+               -ms-transform: translateY(-50%);
+               transform: translateY(-50%);
+          }
+     </style>
+</head>
+
+<body>
+
+
+     <!-- Website Title -->
+     <div class="container">
+          <h2 class='container-heading'><span class='heading_first'> Crycket Analytics</span></h2>
+          <span class="container-heading">Indian Premier League (IPL)</span>
+          <div class='description'>
+               <p>A Fantasy Team Reccomender Web App, Built with Flask, Deployed using Darshankumar Vanol and Adityasinh
+                    Solanki</p>
+          </div>
+     </div>
+
+     <!-- Prediction Area -->
+     <div class="container">
+
+          <form action="{{ url_for('predict') }}" method="POST">
+
+               <div class="table-wrapper">
+                    <table class="fl-table">
+                         <thead>
+                              <tr class="column">
+                                   <th>Team1</th>
+                                   <th>Team2</th>
+                              </tr>
+                         </thead>
+                         <tbody>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player1" id="selectNumber1">
+                                             <option value="none">--- Select Player 1 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player12" id="select2Number1">
+                                             <option value="none">--- Select Player 1 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player2" id="selectNumber2">
+                                             <option value="none">--- Select Player 2--</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player13" id="select2Number2">
+                                             <option value="none">--- Select Player 2--</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player3" id="selectNumber3">
+                                             <option value="none">--- Select Player 3 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player14" id="select2Number3">
+                                             <option value="none">--- Select Player 3 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player4" id="selectNumber4">
+                                             <option value="none">--- Select Player 4 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player15" id="select2Number4">
+                                             <option value="none">--- Select Player 4 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player5" id="selectNumber5">
+                                             <option value="none">--- Select Player 5 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player16" id="select2Number5">
+                                             <option value="none">--- Select Player 5 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player6" id="selectNumber6">
+                                             <option value="none">--- Select Player 6 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player17" id="select2Number6">
+                                             <option value="none">--- Select Player 6 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player7" id="selectNumber7">
+                                             <option value="none">--- Select Player 7---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player18" id="select2Number7">
+                                             <option value="none">--- Select Player 7 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player8" id="selectNumber8">
+                                             <option value="none">--- Select Player 8 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player19" id="select2Number8">
+                                             <option value="none">--- Select Player 8 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player9" id="selectNumber9">
+                                             <option value="none">--- Select Player 9 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player20" id="select2Number9">
+                                             <option value="none">--- Select Player 9 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player10" id="selectNumber10">
+                                             <option value="none">--- Select Player 10 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player21" id="select2Number10">
+                                             <option value="none">--- Select Player 10 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+                              <tr>
+                                   <td>
+                                        <select class="form-input align-center" name="player11" id="selectNumber11">
+                                             <option value="none">--- Select Player 11 ---</option>
+                                        </select>
+                                   </td>
+
+                                   <td>
+
+                                        <select class="form-input align-center" name="player22" id="select2Number11">
+                                             <option value="none">--- Select Player 11 ---</option>
+                                        </select>
+
+                                   </td>
+                              </tr>
+
+                         </tbody>
+                    </table>
+
+
+               </div>
+
+               <div class="containerz">
+
+                    <input type="submit" style="background-color: #4FC3A1;" class="myButton"
+                         value="Reccomend Fantasy Team">
+
+               </div>
+
+
+          </form>
+
+
+     </div>
+
+     <!-- Footer -->
+     <script>
+          var options = ['A Ashish Reddy', 'A Chandila', 'A Chopra', 'A Choudhary',
+               'A Dananjaya', 'A Flintoff', 'A Hales', 'A Joseph', 'A Kumble',
+               'A Mishra', 'A Mithun', 'A Mukund', 'A Nehra', 'A Nel', 'A Roy',
+               'A Singh', 'A Symonds', 'A Turner', 'A Uniyal', 'A Zampa',
+               'AA Bilakhia', 'AA Chavan', 'AA Jhunjhunwala', 'AA Kazi',
+               'AA Noffke', 'AB Agarkar', 'AB Barath', 'AB de Villiers',
+               'AB Dinda', 'AB McDonald', 'Abdur Razzak', 'AC Blizzard',
+               'AC Gilchrist', 'AC Thomas', 'AC Voges', 'AD Mascarenhas',
+               'AD Mathews', 'AD Nath', 'AD Russell', 'AF Milne', 'AG Murtaza',
+               'AG Paunikar', 'AJ Finch', 'AJ Tye', 'AL Menaria', 'AM Nayar',
+               'AM Rahane', 'AM Salvi', 'AN Ahmed', 'AN Ghosh', 'Anand Rajan',
+               'Anirudh Singh', 'Ankit Sharma', 'Ankit Soni', 'Anureet Singh',
+               'AP Dole', 'AP Majumdar', 'AP Tare', 'AR Bawne', 'AR Patel',
+               'AS Rajpoot', 'AS Raut', 'AS Yadav', 'AT Rayudu', 'AUK Pathan',
+               'AV Wankhade', 'Avesh Khan', 'Azhar Mahmood', 'B Akhil',
+               'B Aparajith', 'B Chipli', 'B Geeves', 'B Kumar', 'B Laughlin',
+               'B Lee', 'B Stanlake', 'B Sumanth', 'BA Bhatt', 'BA Stokes',
+               'Basil Thampi', 'BAW Mendis', 'BB McCullum', 'BB Samantray',
+               'BB Sran', 'BCJ Cutting', 'BE Hendricks', 'Bipul Sharma',
+               'BJ Haddin', 'BJ Hodge', 'BJ Rohrer', 'BMAJ Mendis', 'BR Dunk',
+               'BW Hilfenhaus', 'C de Grandhomme', 'C Ganapathy', 'C Ingram',
+               'C Madan', 'C Munro', 'C Nanda', 'CA Ingram', 'CA Lynn',
+               'CA Pujara', 'CH Gayle', 'CH Morris', 'CJ Anderson', 'CJ Ferguson',
+               'CJ Jordan', 'CJ McKay', 'CK Kapugedera', 'CK Langeveldt',
+               'CL White', 'CM Gautam', 'CR Brathwaite', 'CR Woakes',
+               'CRD Fernando', 'D du Preez', 'D Kalyankrishna', 'D Salunkhe',
+               'D Shorey', 'D Short', 'D Wiese', 'D Willey', 'DA Miller',
+               'DA Warner', 'DAJ Bracewell', 'DB Das', 'DB Ravi Teja',
+               'DE Bollinger', 'DH Yagnik', 'DJ Bravo', 'DJ Harris', 'DJ Hooda',
+               'DJ Hussey', 'DJ Jacobs', 'DJ Muthuswami', 'DJ Thornely',
+               'DJG Sammy', 'DL Chahar', 'DL Vettori', 'DM Bravo', 'DNT Zoysa',
+               'DP Nannes', 'DP Vijaykumar', 'DPMD Jayawardene', 'DR Martyn',
+               'DR Smith', 'DS Kulkarni', 'DS Lehmann', 'DT Christian',
+               'DT Patil', 'DW Steyn', 'E Lewis', 'EJG Morgan', 'ER Dwivedi',
+               'F Behardien', 'F du Plessis', 'FH Edwards', 'FY Fazal',
+               'G Gambhir', 'Gagandeep Singh', 'GB Hogg', 'GC Smith',
+               'GD McGrath', 'GH Vihari', 'GJ Bailey', 'GJ Maxwell', 'GR Napier',
+               'GS Sandhu', 'Gurkeerat Singh', 'H Brar', 'H Das', 'H Gurney',
+               'H Klaasen', 'H Vihari', 'H Viljoen', 'Harbhajan Singh',
+               'Harmeet Singh', 'Harmeet Singh (2)', 'Harpreet Singh', 'HH Gibbs',
+               'HH Pandya', 'HM Amla', 'HV Patel', 'I Malhotra', 'I Sharma',
+               'I Sodhi', 'IC Pandey', 'IK Pathan', 'Imran Tahir',
+               'Iqbal Abdulla', 'IR Jaggi', 'Ishan Kishan', 'J Archer',
+               'J Arunkumar', 'J Bairstow', 'J Behrendorff', 'J Botha', 'J Dala',
+               'J Denly', 'J Searles', 'J Suchith', 'J Syed Mohammad', 'J Theron',
+               'J Yadav', 'JA Morkel', 'Jaskaran Singh', 'JC Buttler', 'JD Ryder',
+               'JD Unadkat', 'JDP Oram', 'JDS Neesham', 'JE Taylor',
+               'JEC Franklin', 'JH Kallis', 'JJ Bumrah', 'JJ Roy',
+               'JJ van der Wath', 'JM Kemp', 'JO Holder', 'Joginder Sharma',
+               'JP Duminy', 'JP Faulkner', 'JR Hopes', 'JW Hastings', 'K Ahmed',
+               'K Goel', 'K Gowtham', 'K Khejroliya', 'K Paul', 'K Rabada',
+               'K Santokie', 'K Upadhyay', 'KA Pollard', 'KAJ Roach',
+               'Kamran Akmal', 'Kamran Khan', 'Karanveer Singh',
+               'KB Arun Karthik', 'KC Cariappa', 'KC Sangakkara', 'KD Karthik',
+               'KH Devdhar', 'KH Pandya', 'KJ Abbott', 'KK Cooper', 'KK Nair',
+               'KL Rahul', 'KM Asif', 'KM Jadhav', 'KMDN Kulasekara',
+               'KP Appanna', 'KP Pietersen', 'KS Williamson', 'Kuldeep Yadav',
+               'KV Sharma', 'KW Richardson', 'L Ablish', 'L Balaji', 'L Ferguson',
+               'L Livingstone', 'L Ngidi', 'L Plunkett', 'L Ronchi',
+               'LA Carseldine', 'LA Pomersbach', 'LH Ferguson', 'LJ Wright',
+               'LMP Simmons', 'LPC Silva', 'LR Shukla', 'LRPL Taylor', 'M Ali',
+               'M Ashwin', 'M de Lange', 'M Kaif', 'M Kartik', 'M Klinger',
+               'M Lomror', 'M Manhas', 'M Markande', 'M Morkel', 'M Muralitharan',
+               'M Ntini', 'M Rawat', 'M Santner', 'M Ur Rahman', 'M Vijay',
+               'M Vohra', 'M Wood', 'MA Agarwal', 'MA Khote', 'MA Starc',
+               'Mandeep Singh', 'Mashrafe Mortaza', 'MB Parmar', 'MC Henriques',
+               'MC Juneja', 'MD Mishra', 'MDKJ Perera', 'MEK Hussey',
+               'MF Maharoof', 'MG Johnson', 'MG Neser', 'Misbah-ul-Haq',
+               'MJ Clarke', 'MJ Guptill', 'MJ Henry', 'MJ Lumb', 'MJ McClenaghan',
+               'MK Pandey', 'MK Tiwary', 'ML Hayden', 'MM Patel', 'MM Sharma',
+               'MN Samuels', 'MN van Wyk', 'Mohammad Ashraful', 'Mohammad Asif',
+               'Mohammad Hafeez', 'Mohammad Nabi', 'Mohammed Shami',
+               'Mohammed Siraj', 'MP Stoinis', 'MR Marsh', 'MS Bisla', 'MS Dhoni',
+               'MS Gony', 'MS Wade', 'Mustafizur Rahman', 'MV Boucher', 'N Naik',
+               'N Pooran', 'N Rana', 'N Saini', 'NB Singh', 'ND Doshi',
+               'Niraj Patel', 'NJ Maddinson', 'NJ Rimmington', 'NK Patel',
+               'NL McCullum', 'NLTC Perera', 'NM Coulter-Nile', 'NS Naik',
+               'NV Ojha', 'O Thomas', 'OA Shah', 'P Amarnath', 'P Awana',
+               'P Chopra', 'P Dharmani', 'P Dogra', 'P Krishna', 'P Kumar',
+               'P Negi', 'P Parameswaran', 'P Prasanth', 'P R Barman', 'P Raj',
+               'P Sahu', 'P Shaw', 'P Suyal', 'PA Patel', 'PA Reddy',
+               'Pankaj Singh', 'Parvez Rasool', 'PC Valthaty', 'PD Collingwood',
+               'PJ Cummins', 'PJ Sangwan', 'PM Sarvesh Kumar', 'PP Chawla',
+               'PP Ojha', 'PR Shah', 'PSP Handscomb', 'PV Tambe', 'Q de Kock',
+               'R Ashwin', 'R Bhatia', 'R Bhui', 'R Bishnoi', 'R Dhawan',
+               'R Dravid', 'R McLaren', 'R Ninan', 'R Parag', 'R Rampaul',
+               'R Salam', 'R Sathish', 'R Sharma', 'R Shukla', 'R Singh',
+               'R Tewatia', 'R Vinay Kumar', 'RA Jadeja', 'RA Shaikh',
+               'RA Tripathi', 'Rashid Khan', 'RD Chahar', 'RE Levi',
+               'RE van der Merwe', 'RG More', 'RG Sharma', 'RJ Harris',
+               'RJ Peterson', 'RJ Quiney', 'RN ten Doeschate', 'RP Singh',
+               'RR Bhatkal', 'RR Bose', 'RR Pant', 'RR Powar', 'RR Raje',
+               'RR Rossouw', 'RR Sarwan', 'RS Bopara', 'RS Gavaskar', 'RS Sodhi',
+               'RT Ponting', 'RV Gomez', 'RV Pawar', 'RV Uthappa', 'RW Price',
+               'S Anirudha', 'S Aravind', 'S Badree', 'S Badrinath',
+               'S Chanderpaul', 'S Curran', 'S Dhawan', 'S Dube', 'S Gill',
+               'S Gopal', 'S Hetmyer', 'S Kaul', 'S Kaushik', 'S Kuggeleijn',
+               'S Ladda', 'S Lamichhane', 'S Mavi', 'S Midhun', 'S Nadeem',
+               'S Narwal', 'S Rana', 'S Randiv', 'S Rutherford', 'S Sharma',
+               'S Singh', 'S Sohal', 'S Sreesanth', 'S Sriram', 'S Tyagi',
+               'S Vidyut', 'S Warrier', 'SA Abbott', 'SA Asnodkar', 'SA Yadav',
+               'Sachin Baby', 'Salman Butt', 'Sandeep Sharma', 'SB Bangar',
+               'SB Jakati', 'SB Joshi', 'SB Styris', 'SB Wagh', 'SC Ganguly',
+               'SD Chitnis', 'SD Lad', 'SE Bond', 'SE Marsh', 'Shahid Afridi',
+               'Shakib Al Hasan', 'Shivam Sharma', 'Shoaib Ahmed',
+               'Shoaib Akhtar', 'Shoaib Malik', 'SJ Srivastava', 'SK Raina',
+               'SK Trivedi', 'SK Warne', 'SL Malinga', 'SM Boland', 'SM Harwood',
+               'SM Katich', 'SM Pollock', 'SMSM Senanayake', 'SN Khan',
+               'SN Thakur', 'Sohail Tanvir', 'SP Fleming', 'SP Goswami',
+               'SP Jackson', 'SP Narine', 'SPD Smith', 'SR Tendulkar',
+               'SR Watson', 'SS Agarwal', 'SS Iyer', 'SS Mundhe', 'SS Sarkar',
+               'SS Shaikh', 'SS Tiwary', 'ST Jayasuriya', 'STR Binny',
+               'Sunny Gupta', 'Sunny Singh', 'SV Samson', 'SW Billings',
+               'SW Tait', 'Swapnil Singh', 'T Curran', 'T Henderson', 'T Kohli',
+               'T Mishra', 'T Natarajan', 'T Shamsi', 'T Taibu', 'T Thushara',
+               'TA Boult', 'TD Paine', 'Tejas Baroka', 'TG Southee', 'TL Suman',
+               'TM Dilshan', 'TM Head', 'TM Srivastava', 'TP Sudhindra',
+               'TR Birt', 'TS Mills', 'U Kaul', 'UA Birla', 'UBT Chand',
+               'Umar Gul', 'UT Khawaja', 'UT Yadav', 'V Chakravarthy', 'V Kohli',
+               'V Pratap Singh', 'V Sehwag', 'V Shankar', 'VH Zol',
+               'Vishnu Vinod', 'VR Aaron', 'VRV Singh', 'VS Malik', 'VS Yeligati',
+               'VVS Laxman', 'VY Mahesh', 'W Jaffer', 'WA Mota',
+               'Washington Sundar', 'WD Parnell', 'WP Saha', 'WPUJC Vaas',
+               'X Thalaivan Sargunam', 'Y Gnaneswara Rao', 'Y Nagar',
+               'Y Venugopal Rao', 'YA Abdulla', 'Yashpal Singh', 'YK Pathan',
+               'Younis Khan', 'YS Chahal', 'Yuvraj Singh', 'YV Takawale',
+               'Z Khan'];
+
+          var select1 = document.getElementById("selectNumber1");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select1.appendChild(el);
+          }
+
+          var select2 = document.getElementById("selectNumber2");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select2.appendChild(el);
+          }
+          var select3 = document.getElementById("selectNumber3");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select3.appendChild(el);
+          }
+          var select4 = document.getElementById("selectNumber4");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select4.appendChild(el);
+          }
+          var select5 = document.getElementById("selectNumber5");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select5.appendChild(el);
+
+          }
+          var select6 = document.getElementById("selectNumber6");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select6.appendChild(el);
+
+          }
+
+          var select7 = document.getElementById("selectNumber7");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select7.appendChild(el);
+
+          }
+
+          var select8 = document.getElementById("selectNumber8");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select8.appendChild(el);
+
+          }
+
+
+          var select9 = document.getElementById("selectNumber9");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select9.appendChild(el);
+
+          }
+
+          var select10 = document.getElementById("selectNumber10");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select10.appendChild(el);
+
+          }
+          var select11 = document.getElementById("selectNumber11");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select11.appendChild(el);
+
+          }
+
+
+          var select12 = document.getElementById("select2Number1");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select12.appendChild(el);
+
+          }
+          var select13 = document.getElementById("select2Number2");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select13.appendChild(el);
+
+          }
+
+          var select14 = document.getElementById("select2Number3");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select14.appendChild(el);
+
+          }
+
+          var select15 = document.getElementById("select2Number4");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select15.appendChild(el);
+
+          }
+
+          var select16 = document.getElementById("select2Number5");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select16.appendChild(el);
+
+          }
+
+          var select17 = document.getElementById("select2Number6");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select17.appendChild(el);
+
+          }
+
+          var select18 = document.getElementById("select2Number7");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select18.appendChild(el);
+
+          }
+
+          var select19 = document.getElementById("select2Number8");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select19.appendChild(el);
+
+          }
+
+          var select20 = document.getElementById("select2Number9");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select20.appendChild(el);
+
+          }
+
+          var select21 = document.getElementById("select2Number10");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select21.appendChild(el);
+
+          }
+
+          var select22 = document.getElementById("select2Number11");
+          for (var i = 0; i < options.length; i++) {
+               var opt = options[i];
+               var el = document.createElement("option");
+               el.textContent = opt;
+               el.value = opt;
+               select22.appendChild(el);
+
+          }
+
+
+
+
+     </script>
+
+</body>
+
+</html>
